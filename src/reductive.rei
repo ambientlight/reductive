@@ -23,6 +23,8 @@ module Lense: {
   type action =
     | UpdateState
     | AddListener(action => unit);
+
+  [@deprecated "Legacy API, prefer the new hooks API with jsx 3"]
   let createMake:
     (
       ~name: string=?,
@@ -42,6 +44,8 @@ module Lense: {
 module Provider: {
   type state('reductiveState) = Lense.state('reductiveState);
   type action = Lense.action;
+
+  [@deprecated "Legacy API, prefer the new hooks API with jsx 3"]
   let createMake:
     (
       ~name: string=?,
@@ -130,25 +134,3 @@ Instead - you are free to build the action data type at dispatch time.
 |}
 ]
 let bindActionCreators: (list('a), 'a => 'b) => list(unit => 'b);
-
-type store('action, 'state) = Store.t('action, 'state);
-type reducer('action, 'state) = ('state, 'action) => 'state;
-
-type middleware('action, 'state) =
-  (store('action, 'state), 'action => unit, 'action) => unit;
-
-type storeCreator('action, 'origin, 'state) =
-  (
-    ~reducer: reducer('action, 'origin),
-    ~preloadedState: 'state,
-    ~enhancer: middleware('action, 'state)=?,
-    unit
-  ) =>
-  store('action, 'state);
-
-type storeEnhancer('action, 'origin, 'state) =
-  storeCreator('action, 'origin, 'state) =>
-  storeCreator('action, 'origin, 'state);
-
-type applyMiddleware('action, 'origin, 'state) =
-  middleware('action, 'state) => storeEnhancer('action, 'origin, 'state);
