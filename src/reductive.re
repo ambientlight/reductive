@@ -142,18 +142,23 @@ type reducer('action, 'state) = ('state, 'action) => 'state;
 type middleware('action, 'state) =
   (store('action, 'state), 'action => unit, 'action) => unit;
 
-type storeCreator('action, 'origin, 'state) =
+type storeCreator('action, 'state) =
   (
-    ~reducer: reducer('action, 'origin),
+    ~reducer: reducer('action, 'state),
     ~preloadedState: 'state,
     ~enhancer: middleware('action, 'state)=?,
     unit
   ) =>
   store('action, 'state);
 
-type storeEnhancer('action, 'origin, 'state) =
-  storeCreator('action, 'origin, 'state) =>
-  storeCreator('action, 'origin, 'state);
+type storeEnhancer('action, 'state) =
+  storeCreator('action, 'state) => storeCreator('action, 'state);
 
-type applyMiddleware('action, 'origin, 'state) =
-  middleware('action, 'state) => storeEnhancer('action, 'origin, 'state);
+type liftedStoreEnhancer('action, 'state, 'enhancedAction, 'enhancedState) =
+  (
+    ~reducer: reducer('action, 'state),
+    ~preloadedState: 'enhancedState,
+    ~enhancer: middleware('enhancedAction, 'enhancedState)=?,
+    unit
+  ) =>
+  store('enhancedAction, 'enhancedState);
